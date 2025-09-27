@@ -91,6 +91,7 @@ def execute_node(state: State):
         response = json.loads(response)
         tools = {"create_file": create_file, "str_replace": str_replace, "shell_exec": shell_exec}     
         if response['tool_calls']:
+            # 处理标准tool_calls
             for tool_call in response['tool_calls']:
                 tool_name = tool_call['name']
                 tool_args = tool_call['args']
@@ -111,6 +112,7 @@ def execute_node(state: State):
                 logger.info(f"tool_name:{tool_name},tool_args:{tool_args}\ntool_result:{tool_result}")
                 messages += [ToolMessage(content=f"tool_name:{tool_name},tool_args:{tool_args}\ntool_result:{tool_result}", tool_call_id=tool_call['id'])]
         
+        # 处理自定义<tool_call>标签
         elif '<tool_call>' in response['content']:
             tool_call = response['content'].split('<tool_call>')[-1].split('</tool_call>')[0].strip()
             
